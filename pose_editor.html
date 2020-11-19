@@ -114,9 +114,13 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             return results[1] || 0;
         }
 
+        function reInitInData(){
+            dataIn = new Array(117).fill(0);
+        }
+
         function modelSelected(e) {
             console.log('Model selected: ' + e.value);
-            currModel = e.value;
+            currModel = parseInt(e.value);
             setCookie('currModel', currModel, 365);
         }
 
@@ -147,7 +151,8 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 i++;//points to y
                 var y = _data[i];
                 i++;//points to p
-                switch(pointId){
+                if(x!=0 && y!=0){
+                switch (pointId) {
                     case 0:
                         pushPoint(result, 0, x, y);
                         break;
@@ -188,6 +193,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                         pushPoint(result, 12, x, y);
                         break;
                 }
+            }
 
                 pointId++;
             }
@@ -195,6 +201,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         }
 
         function convert13to39(_data, _data39){
+            reInitInData();
             for (var i = 0; i < _data.length; i++) {
                 var pointId = _data[i];
                 i++;//points to x
@@ -245,6 +252,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 }
                 _data39[baseIdx39] = x;
                 _data39[baseIdx39+1] = y;
+                _data39[baseIdx39+2] = x==0 && y==0 ?0:1;
             }
         }
 
@@ -262,9 +270,9 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 data = dataIn.slice();
 
                 switch (currModel){
-                    case "0": //13-point model - do nothing
+                    case 0: //13-point model - do nothing
                         break;
-                    case "1"://39-point model
+                    case 1://39-point model
                         data = convert39to13(dataIn);
                         break;
                 }
@@ -309,6 +317,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 0, 0, $('#dummy-img')[0].width, $('#dummy-img')[0].height,
                 0, 0, $('#dummy-canvas')[0].height * dummy_img_ratio, $('#dummy-canvas')[0].height);
 
+            reInitInData();
             removeButtonPressed();
         }
 
@@ -533,10 +542,10 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function renderDataWithFileName(fileName, dataArray, dataInArray) {
             var outText;
             switch (currModel){
-                case "0": //13-point model
+                case 0: //13-point model
                     outText = '['+fileName+', '+renderData(dataArray)+']';
                     break;
-                case "1"://39-point model
+                case 1://39-point model
                     convert13to39(dataArray, dataInArray);
                     outText = '['+fileName+', '+renderData(dataInArray)+']';
                     break;
@@ -551,18 +560,6 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             //var newWindow = window.open();
             var outText;
             outText = renderDataWithFileName(imgFileName, data, dataIn);
-            /*
-            switch (currModel){
-                case "0": //13-point model
-                    outText = renderDataWithFileName(imgFileName, data);
-                    break;
-                case "1"://39-point model
-                    convert13to39(data, dataIn);
-                    outText = renderDataWithFileName(imgFileName, dataIn);
-                    break;
-            }
-*/
-
 
             //newWindow.document.write(outText);
             $('#output')[0].innerHTML = outText;
@@ -671,7 +668,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
         $(document).ready(function () {
             try{
-                currModel = readCookie('currModel');
+                currModel = parseInt(readCookie('currModel'));
                 if(currModel === null){
                     currModel = 0;
                 }
@@ -679,7 +676,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 currModel = 0;
             }
             try {
-                currModel = decodeURIComponent($.urlParam('currModel'));
+                currModel = parseInt(decodeURIComponent($.urlParam('currModel')));
             } catch (e) {
                 if(e.message.search('Cannot read property')==-1){
                     currModel = 0;
