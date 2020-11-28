@@ -76,6 +76,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
         var dataIn = [];
         var data = [];
+        var scale = 1;
 
         var points = [
             { id: 0, x: 0.65, y: 0.21 },
@@ -275,8 +276,11 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     case 1://39-point model
                         data = convert39to13(dataIn);
                         break;
+                    case 2://21-point model
+                        data = convert39to13(dataIn);
+                        break;
                 }
-                drawSkeleton('#canvas', '#img', data);
+                drawSkeleton('#canvas', '#img', data, scale);
                 //                var ctx = $('#dummy-canvas')[0].getContext("2d");
                 //                ctx.drawImage($('#dummy-img')[0], 0, 0);
 
@@ -290,8 +294,12 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function dummyLoaded() {
             w = $('#canvas')[0].width;
             h = $('#canvas')[0].height
-            $('#dummy-canvas')[0].width = w;
-            $('#dummy-canvas')[0].height = h;
+            //$('#dummy-canvas')[0].width = w;
+            //$('#dummy-canvas')[0].height = h;
+            $('#dummy-canvas')[0].width = 256;
+            $('#dummy-canvas')[0].height = 512;
+
+
             dummy_img_ratio = h / w;
 
             //var ctx = $('#dummy-canvas')[0].getContext("2d");
@@ -309,14 +317,14 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
             var ctx = $('#canvas')[0].getContext("2d");
             ctx.drawImage($('#img')[0], 0, 0);
-
+/*
             $('#dummy-canvas')[0].width = h * dummy_img_ratio;
             $('#dummy-canvas')[0].height = h;
             var dummy_ctx = $('#dummy-canvas')[0].getContext("2d");
             dummy_ctx.drawImage($('#dummy-img')[0],
                 0, 0, $('#dummy-img')[0].width, $('#dummy-img')[0].height,
                 0, 0, $('#dummy-canvas')[0].height * dummy_img_ratio, $('#dummy-canvas')[0].height);
-
+*/
             reInitInData();
             removeButtonPressed();
         }
@@ -408,9 +416,9 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
         }
 
-        function drawSkeleton(canvas, img, data) {
-            w = $(img)[0].width;
-            h = $(img)[0].height
+        function drawSkeleton(canvas, img, data, scale) {
+            w = $(img)[0].width * scale;
+            h = $(img)[0].height * scale;
             $(canvas)[0].width = w;
             $(canvas)[0].height = h;
 
@@ -422,7 +430,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             }
 
             var ctx = $(canvas)[0].getContext("2d");
-            ctx.drawImage($(img)[0], 0, 0);
+            ctx.drawImage($(img)[0], 0, 0, $('#canvas')[0].width, $('#canvas')[0].height);
             ctx.beginPath();
 
             for (var i = 0; i < data.length; i++) {
@@ -483,7 +491,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             if (typeof nearestPoint !== "undefined") {
                 dummySelectedId = nearestPoint;
                 drawDummySkeleton('#dummy-canvas', '#dummy-img', dummy_data, data);
-                drawSkeleton('#canvas', '#img', data);
+                drawSkeleton('#canvas', '#img', data, scale);
 
             }
         }
@@ -504,14 +512,14 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 $("#hint")[0].innerHTML = '';
                 data = setPoint(dummySelectedId, normX, normY, data);
                 drawDummySkeleton('#dummy-canvas', '#dummy-img', dummy_data, data);
-                drawSkeleton('#canvas', '#img', data);
+                drawSkeleton('#canvas', '#img', data, scale);
                 return;
             }
             nearestPoint = getNearestPoint(normX, normY, data);
             if (typeof nearestPoint !== "undefined") {
                 dummySelectedId = nearestPoint;
                 drawDummySkeleton('#dummy-canvas', '#dummy-img', dummy_data, data);
-                drawSkeleton('#canvas', '#img', data);
+                drawSkeleton('#canvas', '#img', data, scale);
 
             }
         }
@@ -549,6 +557,10 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     convert13to39(dataArray, dataInArray);
                     outText = '['+fileName+', '+renderData(dataInArray)+']';
                     break;
+                case 2://21-point model
+                    convert13to39(dataArray, dataInArray);
+                    outText = '['+fileName+', '+renderData(dataInArray)+']';
+                    break;
 
             }
 
@@ -566,6 +578,23 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             event.stopPropagation();
         }
 
+        function zoomInButtonPressed(event) {
+//            $('#canvas')[0].width = $('#canvas')[0].width * 2;
+//            $('#canvas')[0].height = $('#canvas')[0].height * 2;
+//            var ctx = $('#canvas')[0].getContext("2d");
+//            ctx.drawImage($('#img')[0], 0,0, $('#canvas')[0].width, $('#canvas')[0].height);
+            scale = scale * Math.sqrt(2);
+            drawSkeleton('#canvas', '#img', data, scale);
+        }
+
+        function zoomOutButtonPressed(event) {
+//            $('#canvas')[0].width = $('#canvas')[0].width / 2;
+//            $('#canvas')[0].height = $('#canvas')[0].height / 2;
+//            var ctx = $('#canvas')[0].getContext("2d");
+//            ctx.drawImage($('#img')[0], 0, 0, $('#canvas')[0].width, $('#canvas')[0].height);
+            scale = scale / Math.sqrt(2);
+            drawSkeleton('#canvas', '#img', data, scale);
+        }
 
         function SaveAsFile(t, f, m) {
             try {
@@ -636,7 +665,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function removeButtonPressed() {
             data = removePoint(dummySelectedId, data);
             drawDummySkeleton('#dummy-canvas', '#dummy-img', dummy_data, data);
-            drawSkeleton('#canvas', '#img', data);
+            drawSkeleton('#canvas', '#img', data, scale);
         }
 
         function addButtonPressed() {
@@ -715,6 +744,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             <td>
                 <select name="model" id="modelId" onchange="modelSelected(this)">
                     <option value="0">17-point</option>
+                    <option value="2">21-point</option>
                     <option value="1">39-point</option>
                 </select>
 
@@ -757,6 +787,9 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         <p id="hint" style="height:12px; color:#009900; font-weight: bold;"></p>
 
 
+<!--Material icon library: -->
+<!--https://material.io/resources/icons/?icon=zoom_in&style=baseline-->
+
         <button type="button" onclick="saveButtonPressed(event)">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M0 0h24v24H0z" fill="none" />
@@ -774,6 +807,14 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 </g>
             </svg>
         </button>
+        <button type="button" onclick="zoomInButtonPressed(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"/>
+            </svg>
+        </button>
+        <button type="button" onclick="zoomOutButtonPressed(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"/>
+            </svg>
+        </button>
         <button type="button" onclick="addButtonPressed(event)">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M0 0h24v24H0z" fill="none" />
@@ -787,11 +828,13 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><g><rect fill="none" height="24" width="24"/></g><g><g><g><path d="M23,5.5V20c0,2.2-1.8,4-4,4h-7.3c-1.08,0-2.1-0.43-2.85-1.19L1,14.83c0,0,1.26-1.23,1.3-1.25 c0.22-0.19,0.49-0.29,0.79-0.29c0.22,0,0.42,0.06,0.6,0.16C3.73,13.46,8,15.91,8,15.91V4c0-0.83,0.67-1.5,1.5-1.5S11,3.17,11,4v7 h1V1.5C12,0.67,12.67,0,13.5,0S15,0.67,15,1.5V11h1V2.5C16,1.67,16.67,1,17.5,1S19,1.67,19,2.5V11h1V5.5C20,4.67,20.67,4,21.5,4 S23,4.67,23,5.5z"/></g></g></g></svg>
     </button>
 -->
+        <!--
         <button type="button" onclick="swapButtonPressed(event)">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M0 0h24v24H0z" fill="none" />
                 <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z" /></svg>
         </button>
+        -->
         <button type="button" onclick="removeButtonPressed(event)">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M0 0h24v24H0z" fill="none" />
@@ -800,20 +843,32 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
     </div>
 
-    <canvas id="canvas" style="border:1px solid #d3d3d3;" onmousemove="onMouseMove()" onclick="onMouseClick()">
-        Your browser does not support the canvas element.
+<table>
+    <tr>
+        <td>
+            <div style="height:520px;width:260px;overflow:auto;">
+                <canvas id="dummy-canvas" style="border:1px solid #d3d3d3;" onmousemove="onDummyMouseMove()"
+                        onclick="onDummyClick()">
+                    Your browser does not support the canvas element.
 
-    </canvas>
-    <canvas id="dummy-canvas" style="border:1px solid #d3d3d3;" onmousemove="onDummyMouseMove()"
-        onclick="onDummyClick()">
-        Your browser does not support the canvas element.
-
-    </canvas>
-
+                </canvas>
+            </div>
+        </td>
+        <td>
+            <div style="height:520px;width:520px;overflow:auto;">
+                <canvas id="canvas" style="border:0px solid #d3d3d3;" onmousemove="onMouseMove()" onclick="onMouseClick()">
+                    Your browser does not support the canvas element.
+                </canvas>
+            </div>
+        </td>
+    </tr>
+</table>
 
     <div id="img-wrapper" style="display: none;">
-        <img id="img" onload="imageLoaded()" />
         <img id="dummy-img" src="https://github.com/tarasryb/PoseEditor/raw/master/dummy.png" onload="dummyLoaded()" />
+        <div style="height:520px;width:520px;overflow:auto;">
+        <img id="img" onload="imageLoaded()" />
+        </div>
 
         <!--    onmousemove="onMouseMove()"-->
         <!--         onload="loadSkeleton(imgName+'.json')"-->
