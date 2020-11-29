@@ -43,6 +43,16 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             { id: 10, color: '#000099' },
             { id: 11, color: '#006699' },
             { id: 12, color: '#330099' },
+
+            { id: 13, color: '#ffdd00' },
+            { id: 14, color: '#00ee00' },
+            { id: 15, color: '#aaaa00' },
+            { id: 16, color: '#009933' },
+            { id: 17, color: '#88cc99' },
+            { id: 18, color: '#3388ff' },
+            { id: 19, color: '#00cc99' },
+            { id: 20, color: '#3300ff' },
+
         ];
 
         var w = 0;
@@ -55,7 +65,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         var dataName = '';
         var imgFileName = '';
 
-        const pointCount = 13;
+        const pointCount = 21;
 
         var dummySelectedId = 0;
         var dummy_data = [
@@ -72,6 +82,15 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             10, 0.56, 0.73,
             11, 0.44, 0.93,
             12, 0.54, 0.93,
+
+            13, 0.44, 0.09,
+            14, 0.58, 0.09,
+            15, 0.10, 0.49,
+            16, 0.9, 0.49,
+            17, 0.47, 0.95,
+            18, 0.52, 0.95,
+            19, 0.46, 0.99,
+            20, 0.52, 0.99,
         ];
 
         var dataIn = [];
@@ -92,6 +111,15 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             { id: 10, x: 0.57, y: 0.66 },
             { id: 11, x: 0.25, y: 0.38 },
             { id: 12, x: 0.53, y: 0.82 },
+
+            { id: 13, x: 0.25, y: 0.38 },
+            { id: 14, x: 0.53, y: 0.82 },
+            { id: 15, x: 0.25, y: 0.38 },
+            { id: 16, x: 0.53, y: 0.82 },
+            { id: 17, x: 0.25, y: 0.38 },
+            { id: 18, x: 0.53, y: 0.82 },
+            { id: 19, x: 0.25, y: 0.38 },
+            { id: 20, x: 0.53, y: 0.82 },
         ];
 
         var POINT_STATE = {
@@ -138,12 +166,13 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         }
 
         function pushPoint(_data, id, x, y){
+            console.log(`push point, id=${id}`);
             _data.push(id);
             _data.push(x);
             _data.push(y);
         }
 
-        function convert39to13(_data){
+        function convert39to21(_data){
             var pointId = 0;
             var pointIdforModel13 = 0;
             var result = [];
@@ -152,10 +181,18 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 i++;//points to y
                 var y = _data[i];
                 i++;//points to p
-                if(x!=0 && y!=0){
+                // if(true){
+                   if(x!=0 && y!=0){
+                    console.log(`point id = ${pointId}`);
                 switch (pointId) {
                     case 0:
                         pushPoint(result, 0, x, y);
+                        break;
+                    case 7:
+                        pushPoint(result, 13, x, y);
+                        break;
+                    case 8:
+                        pushPoint(result, 14, x, y);
                         break;
                     case 11:
                         pushPoint(result, 1, x, y);
@@ -193,6 +230,31 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     case 28:
                         pushPoint(result, 12, x, y);
                         break;
+
+                    case 7:
+                        pushPoint(result, 13, x, y);
+                        break;
+                    case 8:
+                        pushPoint(result, 14, x, y);
+                        break;
+                    case 21:
+                        pushPoint(result, 15, x, y);
+                        break;
+                    case 22:
+                        pushPoint(result, 16, x, y);
+                        break;
+                    case 29:
+                        pushPoint(result, 17, x, y);
+                        break;
+                    case 30:
+                        pushPoint(result, 18, x, y);
+                        break;
+                    case 31:
+                        pushPoint(result, 19, x, y);
+                        break;
+                    case 32:
+                        pushPoint(result, 20, x, y);
+                        break;
                 }
             }
 
@@ -201,7 +263,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             return result;
         }
 
-        function convert13to39(_data, _data39){
+        function convert21to39(_data, _data39){
             reInitInData();
             for (var i = 0; i < _data.length; i++) {
                 var pointId = _data[i];
@@ -250,6 +312,31 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     case 12:
                         baseIdx39 = 84;
                         break;
+
+                    case 13:
+                        baseIdx39 = 7*3;
+                        break;
+                    case 14:
+                        baseIdx39 = 8*3;
+                        break;
+                    case 15:
+                        baseIdx39 = 21*3;
+                        break;
+                    case 16:
+                        baseIdx39 = 22*3;
+                        break;
+                    case 17:
+                        baseIdx39 = 29*3;
+                        break;
+                    case 18:
+                        baseIdx39 = 30*3;
+                        break;
+                    case 19:
+                        baseIdx39 = 31*3;
+                        break;
+                    case 20:
+                        baseIdx39 = 32*3;
+                        break;
                 }
                 _data39[baseIdx39] = x;
                 _data39[baseIdx39+1] = y;
@@ -274,10 +361,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     case 0: //13-point model - do nothing
                         break;
                     case 1://39-point model
-                        data = convert39to13(dataIn);
-                        break;
-                    case 2://21-point model
-                        data = convert39to13(dataIn);
+                        data = convert39to21(dataIn);
                         break;
                 }
                 drawSkeleton('#canvas', '#img', data, scale);
@@ -336,20 +420,6 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function drawPoint(ctx, x, y, color, stroke, state) {
             const radius = 5;
 
-            if (typeof state !== "undefined") {
-                if (state === POINT_STATE.SELECTED || state === POINT_STATE.SELECTED_MISSING) {
-                    //                    ctx.strokeStyle = "#ff2222";
-                    //                    ctx.fillStyle = "#ff2222";
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(5000, y);
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x, 5000);
-                    ctx.lineWidth = 1;
-                    ctx.strokeStyle = '#aaaaaa';
-                    ctx.stroke();
-                }
-            }
             ctx.beginPath();
             ctx.moveTo(x + radius, y);
             ctx.arc(x, y, radius, 0, 2 * Math.PI);
@@ -365,6 +435,22 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
             ctx.fill();
             ctx.stroke();
+
+            if (typeof state !== "undefined") {
+                if (state === POINT_STATE.SELECTED || state === POINT_STATE.SELECTED_MISSING) {
+                    //                    ctx.strokeStyle = "#ff2222";
+                    //                    ctx.fillStyle = "#ff2222";
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(5000, y);
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, 5000);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.stroke();
+                }
+            }
+
         }
 
         function searchPoint(_id, _data) {
@@ -469,6 +555,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     L = distance;
                     result = id;
                 }
+                console.log(`id=${id}, y=${y}`);
                 points[id].y = y;
             }
             return result;
@@ -554,14 +641,9 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                     outText = '['+fileName+', '+renderData(dataArray)+']';
                     break;
                 case 1://39-point model
-                    convert13to39(dataArray, dataInArray);
+                    convert21to39(dataArray, dataInArray);
                     outText = '['+fileName+', '+renderData(dataInArray)+']';
                     break;
-                case 2://21-point model
-                    convert13to39(dataArray, dataInArray);
-                    outText = '['+fileName+', '+renderData(dataInArray)+']';
-                    break;
-
             }
 
 //                outText = '['+fileName+', '+renderData(dataArray)+']';
@@ -744,7 +826,6 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             <td>
                 <select name="model" id="modelId" onchange="modelSelected(this)">
                     <option value="0">17-point</option>
-                    <option value="2">21-point</option>
                     <option value="1">39-point</option>
                 </select>
 
