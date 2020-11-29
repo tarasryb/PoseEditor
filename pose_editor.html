@@ -627,7 +627,8 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function renderData(dataArray) {
             var outText = '[';
             for (var i = 0; i < dataArray.length; i++) {
-                outText = outText + dataArray[i];
+				var st = Number.isInteger(dataArray[i])?dataArray[i].toFixed(0):dataArray[i].toFixed(3);
+                outText = outText + st;
                 if (i < dataArray.length - 1) outText = outText + ', ';
             }
             outText = outText + ']';
