@@ -595,8 +595,8 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             var normX = x / $('#canvas')[0].width;
             var normY = y / $('#canvas')[0].height;
             if (editor_state === EDITOR_STATE.ADDING_POINT) {
-                editor_state = EDITOR_STATE.NOTHING;
-                $("#hint")[0].innerHTML = '';
+                // editor_state = EDITOR_STATE.NOTHING;
+                // $("#hint")[0].innerHTML = '';
                 data = setPoint(dummySelectedId, normX, normY, data);
                 drawDummySkeleton('#dummy-canvas', '#dummy-img', dummy_data, data);
                 drawSkeleton('#canvas', '#img', data, scale);
@@ -619,6 +619,9 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 case 27:
                     editor_state = EDITOR_STATE.NOTHING;
                     $("#hint")[0].innerHTML = '';
+                    changeToDefaultCursor();
+                    $("#add-button")[0].style.borderStyle = "";
+
                     break; //ESC key
             }
 
@@ -691,7 +694,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         function saveButtonPressed() {
             //https://eligrey.com/demos/FileSaver.js/
             var outText = renderDataWithFileName(imgFileName, data, dataIn);
-            SaveAsFile(outText, "data.json", "text/plain;charset=utf-8");
+            SaveAsFile(outText, `${imgFileName.split('.')[0]}.json`, "text/plain;charset=utf-8");
         }
 
         function setPoint(_id, _x, _y, dataArray) {
@@ -752,8 +755,17 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         }
 
         function addButtonPressed() {
-            editor_state = EDITOR_STATE.ADDING_POINT;
-            $("#hint")[0].innerHTML = 'Put point ' + dummySelectedId + ' to the correct place or press ESC';
+            if(editor_state == EDITOR_STATE.ADDING_POINT){
+                editor_state = EDITOR_STATE.NOTHING;
+                $("#hint")[0].innerHTML = '';
+                changeToDefaultCursor();
+                $("#add-button")[0].style.borderStyle = "";
+            }else {
+                editor_state = EDITOR_STATE.ADDING_POINT;
+                $("#hint")[0].innerHTML = 'Put point ' + dummySelectedId + ' to the correct place or press ESC';
+                changeToCrossCursor();
+                $("#add-button")[0].style.borderStyle = "inset";
+            }
         }
 
         function setCookie(cookieName, cookieValue, nDays) {
@@ -776,6 +788,14 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
                 if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
+        }
+
+        function changeToCrossCursor(){
+            document.body.style.cursor="crosshair";
+        }
+
+        function changeToDefaultCursor(){
+            document.body.style.cursor="default";
         }
 
         $(document).ready(function () {
@@ -897,7 +917,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"/>
             </svg>
         </button>
-        <button type="button" onclick="addButtonPressed(event)">
+        <button type="button" id="add-button" onclick="addButtonPressed(event)">
             <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
                 <path d="M0 0h24v24H0z" fill="none" />
                 <path
