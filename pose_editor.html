@@ -661,7 +661,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
 
             //newWindow.document.write(outText);
             $('#output')[0].innerHTML = outText;
-            event.stopPropagation();
+            typeof event !== 'undefined' ? event.stopPropagation() : console.log('');
         }
 
         function zoomInButtonPressed(event) {
@@ -692,6 +692,7 @@ file:///D:/cloud/work/1on1/PoseEditor/pose_editor.html?currModel=1
         }
 
         function saveButtonPressed() {
+            viewButtonPressed();
             //https://eligrey.com/demos/FileSaver.js/
             var outText = renderDataWithFileName(imgFileName, data, dataIn);
             SaveAsFile(outText, `${imgFileName.split('.')[0]}.json`, "text/plain;charset=utf-8");
